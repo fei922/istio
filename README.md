@@ -6,6 +6,8 @@
 [![codecov.io](https://codecov.io/github/istio/istio/coverage.svg?branch=master)](https://codecov.io/github/istio/istio?branch=master)
 [![GolangCI](https://golangci.com/badges/github.com/istio/istio.svg)](https://golangci.com/r/github.com/istio/istio)
 
+Base Istio 1.1.0 2019/01/31
+
 An open platform to connect, manage, and secure microservices.
 
 - [Introduction](#introduction)

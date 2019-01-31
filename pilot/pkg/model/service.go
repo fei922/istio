@@ -46,10 +46,14 @@ type Hostname string
 // service can have a single load balancer/virtual IP address associated
 // with it, such that the DNS queries for the FQDN resolves to the virtual
 // IP address (a load balancer IP).
-//
+
 // E.g., in kubernetes, a service foo is associated with
 // foo.default.svc.cluster.local hostname, has a virtual IP of 10.0.1.1 and
 // listens on ports 80, 8080
+
+// Service 表示一个Istio服务，每个Service有一个完全限定名，监听一个或多个端口，
+// service可以关联一个负载均衡或虚拟IP地址，这样通过域名可以解析到一个虚拟IP。
+// 例如：k8s中服务foo.default.svc.cluster.local，虚拟ip10.0.1.1，监听80 8080端口
 type Service struct {
 	// Hostname of the service, e.g. "catalog.mystore.com"
 	Hostname Hostname `json:"hostname"`
@@ -65,6 +69,7 @@ type Service struct {
 
 	// Ports is the set of network ports where the service is listening for
 	// connections
+	// 服务监听的一系列端口
 	Ports PortList `json:"ports,omitempty"`
 
 	// ServiceAccounts specifies the service accounts that run the service.
@@ -72,6 +77,7 @@ type Service struct {
 
 	// MeshExternal (if true) indicates that the service is external to the mesh.
 	// These services are defined using Istio's ServiceEntry spec.
+	// 是否是网格外部的服务
 	MeshExternal bool
 
 	// Resolution indicates how the service instances need to be resolved before routing
@@ -80,6 +86,10 @@ type Service struct {
 	// could either use DNS load balancing (i.e. proxy will query DNS server for the IP of the service)
 	// or use the passthrough model (i.e. proxy will forward the traffic to the network endpoint requested
 	// by the caller)
+	// Resolution表示在流量路由之前需要如何解析服务实例。
+	// 服务注册表中的大多数服务将使用静态负载平衡，其中代理将决定将接收流量的服务实例。
+	// 服务条目可以使用DNS负载平衡（即代理将查询DNS服务器以获取服务的IP）
+	//           或使用直通模型（即代理将流量转发到呼叫者请求的网络端点）
 	Resolution Resolution
 
 	// CreationTime records the time this service was created, if available.
@@ -90,8 +100,7 @@ type Service struct {
 	Attributes ServiceAttributes
 }
 
-// Resolution indicates how the service instances need to be resolved before routing
-// traffic.
+// Resolution indicates how the service instances need to be resolved before routing traffic.
 type Resolution int
 
 const (
@@ -151,13 +160,13 @@ const (
 	// ProtocolHTTPS declares that the port carries HTTPS traffic.
 	ProtocolHTTPS Protocol = "HTTPS"
 	// ProtocolTCP declares the the port uses TCP.
-	// This is the default protocol for a service port.
+	// This is the default protocol for a service port. // 默认
 	ProtocolTCP Protocol = "TCP"
 	// ProtocolTLS declares that the port carries TLS traffic.
 	// TLS traffic is assumed to contain SNI as part of the handshake.
 	ProtocolTLS Protocol = "TLS"
 	// ProtocolUDP declares that the port uses UDP.
-	// Note that UDP protocol is not currently supported by the proxy.
+	// Note that UDP protocol is not currently supported by the proxy. // 尚不支持
 	ProtocolUDP Protocol = "UDP"
 	// ProtocolMongo declares that the port carries MongoDB traffic.
 	ProtocolMongo Protocol = "Mongo"
@@ -193,6 +202,7 @@ func (f AddressFamily) String() string {
 }
 
 // TrafficDirection defines whether traffic exists a service instance or enters a service instance
+// TrafficDirection 定义流量流入/流出服务实例
 type TrafficDirection string
 
 const (
@@ -203,6 +213,7 @@ const (
 )
 
 // ParseProtocol from string ignoring case
+// 忽略大小写
 func ParseProtocol(s string) Protocol {
 	switch strings.ToLower(s) {
 	case "tcp":
@@ -253,6 +264,7 @@ func (p Protocol) IsHTTP() bool {
 }
 
 // IsTCP is true for protocols that use TCP as transport protocol
+// https 是 tcp的么？
 func (p Protocol) IsTCP() bool {
 	switch p {
 	case ProtocolTCP, ProtocolHTTPS, ProtocolTLS, ProtocolMongo, ProtocolRedis, ProtocolMySQL:
